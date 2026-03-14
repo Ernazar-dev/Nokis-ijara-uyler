@@ -1,0 +1,78 @@
+/* 1. Reńler Sisteması (Variables) */
+:root {
+    --primary-color: #2563eb;      /* Zamanagóy Kók */
+    --primary-hover: #1d4ed8;
+    --secondary-color: #64748b;    /* Sır reń */
+    --success-color: #10b981;      /* Jasıl */
+    --danger-color: #ef4444;       /* Qızıl */
+    --background-color: #f8fafc;   /* Júdá ashıq kók/aq */
+    --surface-color: #ffffff;      /* Kartochkalar ushın */
+    --text-main: #1e293b;          /* Tiykarǵı tekst */
+    --text-muted: #64748b;         /* Kómekshi tekst */
+    --border-radius: 12px;
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+    --font-main: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  }
+  
+  /* 2. Reset */
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  body {
+    font-family: var(--font-main);
+    background-color: var(--background-color);
+    color: var(--text-main);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  
+  a {
+    text-decoration: none;
+    color: inherit;
+  }
+  
+  /* 3. Ulıwma Klasslar (Utility Classes) */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.75rem 1.5rem;
+    border-radius: var(--border-radius);
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s ease;
+    
+    &.btn-primary {
+      background-color: var(--primary-color);
+      color: white;
+      &:hover { background-color: var(--primary-hover); }
+    }
+  
+    &.btn-danger {
+      background-color: var(--danger-color);
+      color: white;
+      &:hover { opacity: 0.9; }
+    }
+  }
+  
+  .input-field {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid #e2e8f0;
+    border-radius: var(--border-radius);
+    background-color: #fff;
+    font-size: 1rem;
+    transition: border-color 0.2s;
+  
+    &:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+  }
