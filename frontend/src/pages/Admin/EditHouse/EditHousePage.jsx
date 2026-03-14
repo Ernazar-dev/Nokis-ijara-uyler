@@ -110,7 +110,7 @@ const EditHousePage = () => {
     // Preview URL ni xotiradan tozalaymiz
     URL.revokeObjectURL(newPreviews[index]);
     previewUrlsRef.current = previewUrlsRef.current.filter(
-      (url) => url !== newPreviews[index]
+      (url) => url !== newPreviews[index],
     );
     setNewImages((prev) => prev.filter((_, i) => i !== index));
     setNewPreviews((prev) => prev.filter((_, i) => i !== index));
@@ -169,8 +169,12 @@ const EditHousePage = () => {
     <div className="min-h-screen bg-gray-50 pt-20 pb-12">
       <div className="max-w-5xl mx-auto px-4">
         <div className="mb-8">
-          <h1 className="text-2xl font-bold text-gray-900 mb-1">Úydi Ózgertiw</h1>
-          <p className="text-sm text-gray-600">Maǵlıwmatlardı jańalań hám saqlań</p>
+          <h1 className="text-2xl font-bold text-gray-900 mb-1">
+            Úydi Ózgertiw
+          </h1>
+          <p className="text-sm text-gray-600">
+            Maǵlıwmatlardı jańalań hám saqlań
+          </p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -181,7 +185,9 @@ const EditHousePage = () => {
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="md:col-span-2">
-                <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Atama</label>
+                <label className="block text-xs font-bold text-gray-500 uppercase mb-1">
+                  Atama
+                </label>
                 <input
                   name="title"
                   value={formData.title}
@@ -191,7 +197,9 @@ const EditHousePage = () => {
                 />
               </div>
               <div>
-                <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Baha (so'm)</label>
+                <label className="block text-xs font-bold text-gray-500 uppercase mb-1">
+                  Baha (so'm)
+                </label>
                 <input
                   type="number"
                   name="price"
@@ -201,7 +209,9 @@ const EditHousePage = () => {
                 />
               </div>
               <div>
-                <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Telefon</label>
+                <label className="block text-xs font-bold text-gray-500 uppercase mb-1">
+                  Telefon
+                </label>
                 <input
                   name="phone"
                   value={formData.phone}
@@ -210,7 +220,9 @@ const EditHousePage = () => {
                 />
               </div>
               <div>
-                <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Bólmeler sanı</label>
+                <label className="block text-xs font-bold text-gray-500 uppercase mb-1">
+                  Bólmeler sanı
+                </label>
                 <input
                   type="number"
                   name="rooms"
@@ -220,7 +232,9 @@ const EditHousePage = () => {
                 />
               </div>
               <div>
-                <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Qolaylıqlar</label>
+                <label className="block text-xs font-bold text-gray-500 uppercase mb-1">
+                  Qolaylıqlar
+                </label>
                 <input
                   name="amenities"
                   value={formData.amenities}
@@ -230,7 +244,9 @@ const EditHousePage = () => {
                 />
               </div>
               <div className="md:col-span-2">
-                <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Mánzil</label>
+                <label className="block text-xs font-bold text-gray-500 uppercase mb-1">
+                  Mánzil
+                </label>
                 <input
                   name="address"
                   value={formData.address}
@@ -239,7 +255,9 @@ const EditHousePage = () => {
                 />
               </div>
               <div className="md:col-span-2">
-                <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Táriyp</label>
+                <label className="block text-xs font-bold text-gray-500 uppercase mb-1">
+                  Táriyp
+                </label>
                 <textarea
                   name="description"
                   value={formData.description}
@@ -265,11 +283,16 @@ const EditHousePage = () => {
                   className="relative aspect-square border border-gray-200 overflow-hidden group"
                 >
                   <img
-                    src={img.startsWith("http") ? img : `${BASE_URL}/${img.startsWith("/") ? img.slice(1) : img}`}
+                    src={
+                      img.startsWith("http")
+                        ? img
+                        : `${BASE_URL}/${img.startsWith("/") ? img.slice(1) : img}`
+                    }
                     className="w-full h-full object-cover"
                     alt="existing"
                     onError={(e) => {
-                      e.target.src = "https://via.placeholder.com/200x200?text=Rasm+yo'q";
+                      e.target.src =
+                        "https://via.placeholder.com/200x200?text=Rasm+yo'q";
                     }}
                   />
                   <button
@@ -312,7 +335,9 @@ const EditHousePage = () => {
               {existingImages.length + newImages.length < 7 && (
                 <label className="aspect-square border-2 border-dashed border-gray-300 flex flex-col items-center justify-center cursor-pointer hover:bg-gray-50 transition-colors">
                   <FiPlus className="text-gray-400 text-xl mb-1" />
-                  <span className="text-[10px] text-gray-400 font-bold uppercase">Qosıw</span>
+                  <span className="text-[10px] text-gray-400 font-bold uppercase">
+                    Qosıw
+                  </span>
                   <input
                     type="file"
                     multiple
@@ -325,7 +350,9 @@ const EditHousePage = () => {
             </div>
 
             {existingImages.length + newImages.length === 0 && (
-              <p className="text-xs text-red-500 mt-1">Kamida 1 ta rasm bo'lishi kerak</p>
+              <p className="text-xs text-red-500 mt-1">
+                Kamida 1 ta rasm bo'lishi kerak
+              </p>
             )}
           </div>
 

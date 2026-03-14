@@ -24,6 +24,9 @@ const HouseModal = ({ house, onClose }) => {
 
     // Slash (/) muammosini hal qilish:
     // Agar path / bilan boshlansa, uni olib tashlab, keyin ulaymiz
+    // Cloudinary URL — to'g'ridan-to'g'ri qaytaramiz
+    if (path.startsWith("http")) return path;
+
     const cleanPath = path.startsWith("/") ? path.slice(1) : path;
 
     // Agar path ichida allaqachon "uploads" bo'lsa
