@@ -1,167 +1,173 @@
-const { House, User } = require('../models');
-const fs = require('fs');
-const path = require('path');
+const { House, User } = require("../models");
+const cloudinary = require("cloudinary").v2;
 
-// 1. Adminniń óz úyleri
+// 1. Adminning o'z uylari
 exports.getMyHouses = async (req, res) => {
-    try {
-        const houses = await House.findAll({
-            where: { userId: req.user.id },
-            order: [['createdAt', 'DESC']]
-        });
-        res.json(houses);
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
+  try {
+    const houses = await House.findAll({
+      where: { userId: req.user.id },
+      order: [["createdAt", "DESC"]],
+    });
+    res.json(houses);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
 };
 
-// 2. Jańa úy qosıw (Limit penen)
+// 2. Yangi uy qo'shish (limit bilan)
 exports.createHouse = async (req, res) => {
-    try {
-        // Limit tekseriw
-        const count = await House.count({ where: { userId: req.user.id } });
+  try {
+    const count = await House.count({ where: { userId: req.user.id } });
 
-        if (req.user.role !== 'superadmin' && count >= req.user.houseLimit) {
-            return res.status(403).json({ 
-                message: `Sizdiń limitińiz (max ${req.user.houseLimit} úy) toldı. Super Adminge xabarlasıń.` 
-            });
-        }
-
-        // Súwretler hám Amenities
-        const imagePaths = req.files ? req.files.map(f => f.path.replace(/\\/g, '/')) : [];
-        const amenitiesList = req.body.amenities ? req.body.amenities.split(',') : [];
-
-        const house = await House.create({
-            ...req.body,
-            userId: req.user.id,
-            images: imagePaths,
-            amenities: amenitiesList
-        });
-        
-        res.status(201).json(house);
-    } catch (error) {
-        res.status(400).json({ message: error.message });
+    if (req.user.role !== "superadmin" && count >= req.user.houseLimit) {
+      return res.status(403).json({
+        message: `Sizdiń limitińiz (max ${req.user.houseLimit} úy) toldı. Super Adminge xabarlasıń.`,
+      });
     }
+
+    // Cloudinary rasmlar URL lari (path emas, secure_url)
+    const imagePaths = req.files ? req.files.map((f) => f.path) : [];
+    const amenitiesList = req.body.amenities
+      ? req.body.amenities.split(",")
+      : [];
+
+    const house = await House.create({
+      ...req.body,
+      userId: req.user.id,
+      images: imagePaths,
+      amenities: amenitiesList,
+    });
+
+    res.status(201).json(house);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
 };
 
-// 3. Úydi ózgertiw (Update)
+// 3. Uyni yangilash
 exports.updateHouse = async (req, res) => {
-    try {
-        const house = await House.findByPk(req.params.id);
+  try {
+    const house = await House.findByPk(req.params.id);
+    if (!house) return res.status(404).json({ message: "Úy tabılmadı" });
 
-        if (!house) return res.status(404).json({ message: 'Úy tabılmadı' });
-        
-        // Ruxsat tekseriw
-        if (house.userId !== req.user.id && req.user.role !== 'superadmin') {
-            return res.status(403).json({ message: 'Ruxsat joq' });
-        }
-
-        // 1. Jańa súwretler bar ma?
-        let newImagePaths = [];
-        if (req.files && req.files.length > 0) {
-           newImagePaths = req.files.map(f => f.path.replace(/\\/g, '/'));
-        }
-
-        // 2. Eski súwretlerge jańaların qosamız (Append)
-        // house.images bul PostgreSQL array
-        const updatedImages = [...(house.images || []), ...newImagePaths];
-
-        // 3. Amenities (Qolaylıqlar)
-        // FormData-dan 'Wifi, Gaz' string bolıp kelse, array qılamız
-        let amenitiesList = house.amenities;
-        if (req.body.amenities) {
-            amenitiesList = typeof req.body.amenities === 'string' 
-                ? req.body.amenities.split(',') 
-                : req.body.amenities;
-        }
-
-        // 4. Update (Maǵlıwmatlar + Súwretler)
-        await house.update({
-            ...req.body,
-            images: updatedImages, // Jańalanǵan súwretler dizimi
-            amenities: amenitiesList
-        });
-
-        res.json(house);
-
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: error.message });
+    if (house.userId !== req.user.id && req.user.role !== "superadmin") {
+      return res.status(403).json({ message: "Ruxsat joq" });
     }
+
+    // Yangi rasmlar Cloudinary URL lari
+    let newImagePaths = [];
+    if (req.files && req.files.length > 0) {
+      newImagePaths = req.files.map((f) => f.path);
+    }
+
+    const updatedImages = [...(house.images || []), ...newImagePaths];
+
+    let amenitiesList = house.amenities;
+    if (req.body.amenities) {
+      amenitiesList =
+        typeof req.body.amenities === "string"
+          ? req.body.amenities.split(",")
+          : req.body.amenities;
+    }
+
+    await house.update({
+      ...req.body,
+      images: updatedImages,
+      amenities: amenitiesList,
+    });
+
+    res.json(house);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
 };
 
-// 4. Bir úydi alıw (Edit ushın)
+// 4. ID bo'yicha bir uy
 exports.getHouseById = async (req, res) => {
-    try {
-        const house = await House.findByPk(req.params.id);
-        if(!house) return res.status(404).json({message: 'Not found'});
-        res.json(house);
-    } catch (err) { res.status(500).json({message: err.message}); }
+  try {
+    const house = await House.findByPk(req.params.id);
+    if (!house) return res.status(404).json({ message: "Not found" });
+    res.json(house);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
 };
 
-// 5. Barlıq úylerdi alıw (Client ushın)
+// 5. Barcha uylar
 exports.getAllHouses = async (req, res) => {
-    try {
-        const houses = await House.findAll({
-            include: {
-                model: User,
-                attributes: ['name', 'email']
-            }
-        });
-        res.json(houses);
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
+  try {
+    const houses = await House.findAll({
+      include: {
+        model: User,
+        attributes: ["name", "email"],
+      },
+      order: [["createdAt", "DESC"]],
+    });
+    res.json(houses);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
 };
 
-// 6. Úydi óshiriw
+// 6. Uyni o'chirish
 exports.deleteHouse = async (req, res) => {
-    try {
-        const house = await House.findByPk(req.params.id);
+  try {
+    const house = await House.findByPk(req.params.id);
+    if (!house) return res.status(404).json({ message: "Úy tabılmadı" });
 
-        if (!house) return res.status(404).json({ message: 'Úy tabılmadı' });
-
-        if (house.userId !== req.user.id && req.user.role !== 'superadmin') {
-            return res.status(403).json({ message: 'Bunı óshiriwge huqıqıńız joq' });
-        }
-
-        await house.destroy();
-        res.json({ message: 'Úy óshirildi' });
-    } catch (error) {
-        res.status(500).json({ message: error.message });
+    if (house.userId !== req.user.id && req.user.role !== "superadmin") {
+      return res.status(403).json({ message: "Bunı óshiriwge huqıqıńız joq" });
     }
+
+    // Cloudinary dan rasmlarni ham o'chiramiz
+    if (house.images && house.images.length > 0) {
+      const deletePromises = house.images.map((url) => {
+        // URL dan public_id ni olamiz: .../nokis-ijara/filename
+        const parts = url.split("/");
+        const filename = parts[parts.length - 1].split(".")[0];
+        const publicId = `nokis-ijara/${filename}`;
+        return cloudinary.uploader.destroy(publicId);
+      });
+      await Promise.allSettled(deletePromises);
+    }
+
+    await house.destroy();
+    res.json({ message: "Úy óshirildi" });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
 };
+
+// 7. Bitta rasmni o'chirish
 exports.deleteHouseImage = async (req, res) => {
-    try {
-        const { id } = req.params;
-        const { imageUrl } = req.body; // Óshiriletuǵın súwrettiń atı
+  try {
+    const { id } = req.params;
+    const { imageUrl } = req.body;
 
-        const house = await House.findByPk(id);
-        if (!house) return res.status(404).json({ message: 'Úy tabılmadı' });
+    const house = await House.findByPk(id);
+    if (!house) return res.status(404).json({ message: "Úy tabılmadı" });
 
-        // User tekseriw
-        if (house.userId !== req.user.id && req.user.role !== 'superadmin') {
-            return res.status(403).json({ message: 'Ruxsat joq' });
-        }
-
-        // Bazadan súwret atın alıp taslaw
-        const newImages = house.images.filter(img => img !== imageUrl);
-        
-        // Fayldı fizikalıq túrde diskten óshiriw (optional)
-        const filePath = path.join(__dirname, '..', imageUrl);
-        if (fs.existsSync(filePath)) {
-            fs.unlinkSync(filePath);
-        }
-
-        // Bazanı jańalaw (Sequelize array update)
-        // Dıqqat: Array update ushın `changed` shaqırıw kerek bolıwı múmkin
-        house.images = newImages;
-        house.changed('images', true);
-        await house.save();
-
-        res.json({ message: 'Súwret óshirildi', images: newImages });
-
-    } catch (error) {
-        res.status(500).json({ message: error.message });
+    if (house.userId !== req.user.id && req.user.role !== "superadmin") {
+      return res.status(403).json({ message: "Ruxsat joq" });
     }
+
+    // Cloudinary dan rasmni o'chirish
+    try {
+      const parts = imageUrl.split("/");
+      const filename = parts[parts.length - 1].split(".")[0];
+      const publicId = `nokis-ijara/${filename}`;
+      await cloudinary.uploader.destroy(publicId);
+    } catch (e) {
+      console.error("Cloudinary delete error:", e.message);
+    }
+
+    const newImages = house.images.filter((img) => img !== imageUrl);
+    house.images = newImages;
+    house.changed("images", true);
+    await house.save();
+
+    res.json({ message: "Súwret óshirildi", images: newImages });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
 };

@@ -57,10 +57,12 @@ const FavoritesPage = () => {
 
   const getImageUrl = (images) => {
     if (images?.length) {
-      const path = images[0].startsWith("/") ? images[0].slice(1) : images[0];
-      return `${BASE_URL}/${path}`;
+      const img = images[0];
+      if (img.startsWith("http")) return img; // Cloudinary URL
+      const clean = img.startsWith("/") ? img.slice(1) : img;
+      return `${BASE_URL}/${clean}`; // Eski uploads
     }
-    return "https://via.placeholder.com/600x400?text=Rasm+yo'q";
+    return "https://placehold.co/600x400?text=Rasm+yoq";
   };
 
   return (

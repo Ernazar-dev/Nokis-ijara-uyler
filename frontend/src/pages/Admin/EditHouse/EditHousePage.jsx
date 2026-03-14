@@ -265,7 +265,7 @@ const EditHousePage = () => {
                   className="relative aspect-square border border-gray-200 overflow-hidden group"
                 >
                   <img
-                    src={`${BASE_URL}/${img.startsWith("/") ? img.slice(1) : img}`}
+                    src={img.startsWith("http") ? img : `${BASE_URL}/${img.startsWith("/") ? img.slice(1) : img}`}
                     className="w-full h-full object-cover"
                     alt="existing"
                     onError={(e) => {

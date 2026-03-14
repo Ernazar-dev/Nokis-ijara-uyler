@@ -139,7 +139,7 @@ const HouseModal = ({ house, onClose }) => {
                         src={getUrl(img)}
                         className="w-full h-full object-cover"
                         wrapperClassName="w-full h-full"
-                        fallback="https://via.placeholder.com/400x550?text=Rasm+topilmadi"
+                        fallback="https://placehold.co/400x550?text=Rasm+yoq"
                       />
                     </div>
                   ))}
