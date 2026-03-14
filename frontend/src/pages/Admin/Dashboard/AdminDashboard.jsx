@@ -57,10 +57,13 @@ const AdminDashboard = () => {
     }
   };
 
-  const getImageUrl = (images) =>
-    images?.length > 0
-      ? `${BASE_URL}/${images[0].startsWith("/") ? images[0].slice(1) : images[0]}`
-      : "https://via.placeholder.com/300x200?text=Súwret+Joq";
+  const getImageUrl = (images) => {
+    if (!images?.length) return "https://placehold.co/300x200?text=Rasm+yoq";
+    const img = images[0];
+    if (img.startsWith("http")) return img; // Cloudinary URL
+    const clean = img.startsWith("/") ? img.slice(1) : img;
+    return `${BASE_URL}/${clean}`; // Eski uploads
+  };
 
   const activeHouses = myHouses.filter((h) => h.isAvailable).length;
   const inactiveHouses = myHouses.filter((h) => !h.isAvailable).length;
