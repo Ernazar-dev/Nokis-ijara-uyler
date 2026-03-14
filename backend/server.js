@@ -40,7 +40,7 @@ app.use(helmet({
 const allowedOrigins = [
   "http://localhost:5173",
   "http://127.0.0.1:5173",
- "https://nokis-ijara-uyler-backend.onrender.com",
+ "https://nokis-ijara-uyler.vercel.app",
   // "https://sizning-saytingiz.vercel.app",
 ];
 
